@@ -124,11 +124,25 @@ static void generic_work(uint32_t msw, uint32_t lsw, uint32_t msw_id,
 
         struct request * req = (struct request *) data;
 
+	/*
         uint64_t i = 0;
         do {
                 asm volatile ("nop");
                 i++;
         } while ( i / 0.233 < req->runNs);
+	*/
+	struct timespec workstartn, workendn;
+        clock_gettime(CLOCK_MONOTONIC, &workstartn);
+
+        while(1) {
+                clock_gettime(CLOCK_MONOTONIC, &workendn);
+                long nano_time = ((workendn.tv_sec - workstartn.tv_sec)*1.0e9) + ((workendn.tv_nsec - workstartn.tv_nsec));
+                if(nano_time >= req->runNs)
+                {	
+                        // printf("Nano time %d", nano_time);
+                        break;
+                }
+        }
 
         asm volatile ("cli":::);
         struct response * resp = mempool_alloc(&percpu_get(response_pool));

@@ -36,6 +36,8 @@ extern void dune_apic_send_posted_ipi(uint8_t vector, uint32_t dest_core);
 #define PREEMPT_VECTOR 0xf2
 #define PREEMPTION_DELAY 5000
 
+//#define PREEMPTION_DELAY 5000000
+
 static void timestamp_init(int num_workers)
 {
         int i;
@@ -98,8 +100,14 @@ static inline void dispatch_request(int i, uint64_t cur_time)
 
 static inline void preempt_worker(int i, uint64_t cur_time)
 {
-        if (preempt_check[i] && (((cur_time - timestamps[i]) / 2.5) > PREEMPTION_DELAY)) {
+  if (preempt_check[i] && (((cur_time - timestamps[i]) / 2.5) > PREEMPTION_DELAY)) {
                 // Avoid preempting more times.
+
+	  if (PREEMPTION_DELAY >= 5000000) {
+	    printf("debug: preempted when not supposed to\n");
+	    printf("debug: i %d preempt_check[i] %s cur_time %ld timestamps[i] %ld difference %ld\n", i, preempt_check[i] ? "true": "false", cur_time, timestamps[i], (cur_time - timestamps[i]) / 2.5);
+	  }
+	  
                 preempt_check[i] = false;
                 dune_apic_send_posted_ipi(PREEMPT_VECTOR, CFG.cpu[i + 2]);
         }

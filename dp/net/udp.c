@@ -44,6 +44,8 @@
 
 #include "net.h"
 
+#define DEBUG
+
 int udp_input(struct mbuf *pkt, struct ip_hdr *iphdr, struct udp_hdr *udphdr)
 {
 	int i;

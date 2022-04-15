@@ -28,7 +28,7 @@
 #include <ix/mempool.h>
 #include <ix/ethqueue.h>
 
-#define MAX_WORKERS   18
+#define MAX_WORKERS   35
 
 #define WAITING     0x00
 #define ACTIVE      0x01
